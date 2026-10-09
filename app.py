@@ -4,7 +4,123 @@ import plotly.express as px
 
 import numpy as np
 
+# ============================================================
+# AI INFRASTRUCTURE CAPACITY CALCULATIONS
+# ============================================================
 
+def calculate_ai_capacity(
+    ai_data_tb,
+    model_parameters_b=70,
+    vram_per_gpu_gb=80,
+    precision_bytes=2,
+    transfer_window_minutes=120,
+    iops_block_kb=64
+):
+
+    # --------------------------------------------------------
+    # 1. STORAGE
+    # --------------------------------------------------------
+
+    # AI pipeline typically creates additional copies:
+    #
+    # Raw dataset
+    # + processed dataset
+    # + embeddings / indexes
+    #
+    # We use 1.5x as a planning assumption.
+
+    ai_storage_tb = ai_data_tb * 1.5
+
+
+    # --------------------------------------------------------
+    # 2. STORAGE IOPS
+    # --------------------------------------------------------
+
+    total_bytes = ai_data_tb * 1_000_000_000_000
+
+    block_bytes = iops_block_kb * 1024
+
+    seconds = transfer_window_minutes * 60
+
+    required_iops = (
+        total_bytes /
+        block_bytes /
+        seconds
+    )
+
+
+    # --------------------------------------------------------
+    # 3. NETWORK BANDWIDTH
+    # --------------------------------------------------------
+
+    network_gbps = (
+        ai_data_tb
+        * 8_000
+        / transfer_window_minutes
+        / 60
+    )
+
+
+    # --------------------------------------------------------
+    # 4. GPU VRAM
+    # --------------------------------------------------------
+
+    model_memory_gb = (
+        model_parameters_b
+        * 1_000_000_000
+        * precision_bytes
+        / (1024 ** 3)
+    )
+
+
+    # Training generally requires additional memory
+    # for gradients, optimizer states and activations.
+
+    training_memory_gb = (
+        model_memory_gb * 6
+    )
+
+
+    gpu_count = max(
+        1,
+        int(
+            np.ceil(
+                training_memory_gb /
+                vram_per_gpu_gb
+            )
+        )
+    )
+
+
+    # --------------------------------------------------------
+    # RETURN CAPACITY MODEL
+    # --------------------------------------------------------
+
+    return {
+        "AI_Data_TB": ai_data_tb,
+
+        "AI_Storage_TB": ai_storage_tb,
+
+        "Required_IOPS": required_iops,
+
+        "Network_Gbps": network_gbps,
+
+        "Model_Memory_GB": model_memory_gb,
+
+        "Training_Memory_GB": training_memory_gb,
+
+        "GPU_Count": gpu_count
+    }
+
+# ============================================================
+# TEST AI CAPACITY MODEL
+# ============================================================
+
+test_capacity = calculate_ai_capacity(
+    ai_data_tb=324
+)
+
+st.write(test_capacity)
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
