@@ -112,15 +112,7 @@ def calculate_ai_capacity(
         "GPU_Count": gpu_count
     }
 
-# ============================================================
-# TEST AI CAPACITY MODEL
-# ============================================================
 
-test_capacity = calculate_ai_capacity(
-    ai_data_tb=324
-)
-
-st.write(test_capacity)
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
