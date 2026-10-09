@@ -550,7 +550,53 @@ total_mainframe_tb = mainframe_df["Data_TB"].sum()
 total_ai_candidate_tb = (
     mainframe_df["AI_Candidate_TB"].sum()
 )
+# ============================================================
+# AI INFRASTRUCTURE CAPACITY MODEL
+# ============================================================
 
+ai_capacity = calculate_ai_capacity(
+    ai_data_tb=total_ai_candidate_tb
+)
+st.header("AI Infrastructure Capacity Model")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric(
+    "AI Data",
+    f"{ai_capacity['AI_Data_TB']:.1f} TB"
+)
+
+col2.metric(
+    "AI Storage Required",
+    f"{ai_capacity['AI_Storage_TB']:.1f} TB"
+)
+
+col3.metric(
+    "Required IOPS",
+    f"{ai_capacity['Required_IOPS']:,.0f}"
+)
+
+col4.metric(
+    "Network Bandwidth",
+    f"{ai_capacity['Network_Gbps']:.1f} Gbps"
+)
+
+col5, col6, col7 = st.columns(3)
+
+col5.metric(
+    "Model Memory",
+    f"{ai_capacity['Model_Memory_GB']:.1f} GB"
+)
+
+col6.metric(
+    "Training Memory",
+    f"{ai_capacity['Training_Memory_GB']:.1f} GB"
+)
+
+col7.metric(
+    "Estimated GPUs",
+    f"{ai_capacity['GPU_Count']}"
+)
 ai_candidate_pct = (
     total_ai_candidate_tb /
     total_mainframe_tb *
