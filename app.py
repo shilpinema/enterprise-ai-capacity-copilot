@@ -270,6 +270,101 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+# ============================================================
+# MAINFRAME PERFORMANCE ANALYSIS
+# ============================================================
+
+st.subheader("Mainframe Performance Profile")
+
+col1, col2 = st.columns(2)
+
+
+with col1:
+
+    fig = px.bar(
+        mainframe_df,
+        x="Workload",
+        y="Peak_IOPS",
+        title="Peak IOPS by Mainframe Workload",
+        text_auto=".2s"
+    )
+
+    fig.update_layout(
+        yaxis_title="Peak IOPS",
+        xaxis_title="Workload"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+with col2:
+
+    fig = px.bar(
+        mainframe_df,
+        x="Workload",
+        y="Throughput_GBps",
+        title="Peak Throughput by Mainframe Workload",
+        text_auto=".2f"
+    )
+
+    fig.update_layout(
+        yaxis_title="Throughput (GB/s)",
+        xaxis_title="Workload"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+# ============================================================
+# SLA RISK
+# ============================================================
+
+st.subheader("Batch Window & SLA Risk")
+
+fig = px.bar(
+    mainframe_df,
+    x="Workload",
+    y=[
+        "Batch_Window_Min",
+        "SLA_Min"
+    ],
+    barmode="group",
+    title="Batch Processing Time vs SLA"
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+# ============================================================
+# CAPACITY RISK SUMMARY
+# ============================================================
+
+st.subheader("Infrastructure Risk Summary")
+
+risk_df = mainframe_df[
+    [
+        "Workload",
+        "Data_TB",
+        "Daily_Growth_GB",
+        "Peak_IOPS",
+        "Throughput_GBps",
+        "Batch_Window_Min",
+        "SLA_Min",
+        "SLA_Status"
+    ]
+].copy()
+
+st.dataframe(
+    risk_df,
+    use_container_width=True,
+    hide_index=True
+)
 st.header("Executive Storage View")
 
 col1, col2, col3, col4 = st.columns(4)
