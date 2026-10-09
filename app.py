@@ -241,6 +241,46 @@ def identify_primary_bottleneck(risk_df):
     ]
 
     return candidates.iloc[0]["Area"]
+def generate_infrastructure_recommendation(
+    primary_bottleneck,
+    overall_risk
+):
+
+    recommendations = {
+
+        "GPU": (
+            "Evaluate additional GPU capacity or "
+            "reduce model/training concurrency."
+        ),
+
+        "Network": (
+            "Evaluate higher-bandwidth network fabric "
+            "such as 400Gbps+ InfiniBand or RoCE."
+        ),
+
+        "Storage IOPS": (
+            "Evaluate NVMe-based storage and "
+            "increase parallel storage throughput."
+        ),
+
+        "Storage Capacity": (
+            "Increase storage capacity and evaluate "
+            "tiering cold data to lower-cost object/archive storage."
+        )
+    }
+
+    recommendation = recommendations.get(
+        primary_bottleneck,
+        "Review infrastructure sizing assumptions."
+    )
+
+    if overall_risk == "High":
+        recommendation = (
+            "Priority action: "
+            + recommendation
+        )
+
+    return recommendation
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
@@ -732,6 +772,11 @@ overall_risk = calculate_overall_risk(
 primary_bottleneck = identify_primary_bottleneck(
     infrastructure_risk_df
 )
+recommendation = generate_infrastructure_recommendation(
+    primary_bottleneck,
+    overall_risk
+)
+
 st.subheader("Executive Infrastructure Assessment")
 
 risk_col, bottleneck_col = st.columns(2)
@@ -744,6 +789,9 @@ risk_col.metric(
 bottleneck_col.metric(
     "Primary Bottleneck",
     primary_bottleneck
+)
+st.info(
+    f"**Recommended Action:** {recommendation}"
 )
 st.subheader("Infrastructure Bottleneck & Risk Analysis")
 st.dataframe(
