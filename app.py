@@ -549,31 +549,7 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
-# ------------------------------------------------------------
-# AI CANDIDATE DETAIL
-# ------------------------------------------------------------
 
-st.subheader("AI Data Pipeline Candidates")
-
-ai_candidate_df = mainframe_df[
-    [
-        "Workload",
-        "Data_TB",
-        "AI_Workload_Type",
-        "AI_Candidate_Pct",
-        "AI_Candidate_TB"
-    ]
-].copy()
-
-ai_candidate_df["AI_Candidate_Pct"] = (
-    ai_candidate_df["AI_Candidate_Pct"] * 100
-)
-
-st.dataframe(
-    ai_candidate_df,
-    use_container_width=True,
-    hide_index=True
-)
 st.header("Executive Storage View")
 
 col1, col2, col3, col4 = st.columns(4)
