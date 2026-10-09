@@ -90,11 +90,58 @@ def generate_mainframe_workloads(seed=42):
 
     # Projected data after one year.
 
-    df["Projected_1Y_TB"] = (
-        df["Data_TB"] + df["Annual_Growth_TB"]
-    )
+    # ============================================================
+# AI WORKLOAD CLASSIFICATION
+# ============================================================
 
-    return df
+def classify_ai_workload(row):
+
+    workload = row["Workload"]
+    access = row["Access_Frequency"]
+    primary_use = row["Primary_Use"]
+
+    if workload in ["SMF", "Application Logs"]:
+        return "AI Analytics"
+
+    elif workload == "Db2":
+        return "RAG / Knowledge Retrieval"
+
+    elif workload == "VSAM":
+        return "RAG / Knowledge Retrieval"
+
+    elif workload == "Batch":
+        return "Model Training"
+
+    else:
+        return "Operational / Not AI Prioritized"
+
+
+df["AI_Workload_Type"] = df.apply(
+    classify_ai_workload,
+    axis=1
+)
+
+# Estimate how much of each workload is suitable
+# for an AI pipeline.
+
+ai_percentage = {
+    "VSAM": 0.35,
+    "Db2": 0.45,
+    "SMF": 0.70,
+    "Batch": 0.25,
+    "Application Logs": 0.60
+}
+
+df["AI_Candidate_Pct"] = df["Workload"].map(
+    ai_percentage
+)
+
+df["AI_Candidate_TB"] = (
+    df["Data_TB"] *
+    df["AI_Candidate_Pct"]
+)
+
+return df
 
 # Generate synthetic mainframe workload data
 
@@ -362,6 +409,161 @@ risk_df = mainframe_df[
 
 st.dataframe(
     risk_df,
+    use_container_width=True,
+    hide_index=True
+)
+# ============================================================
+# AI WORKLOAD INTELLIGENCE
+# ============================================================
+
+st.header("AI Workload Intelligence")
+
+st.markdown(
+    """
+    Identifies which enterprise mainframe workloads are potential
+    candidates for AI processing and estimates the amount of data
+    that may enter the AI pipeline.
+    """
+)
+
+# ------------------------------------------------------------
+# AI DATA SUMMARY
+# ------------------------------------------------------------
+
+total_mainframe_tb = mainframe_df["Data_TB"].sum()
+
+total_ai_candidate_tb = (
+    mainframe_df["AI_Candidate_TB"].sum()
+)
+
+ai_candidate_pct = (
+    total_ai_candidate_tb /
+    total_mainframe_tb *
+    100
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    st.metric(
+        "Mainframe Data",
+        f"{total_mainframe_tb:,.0f} TB"
+    )
+
+with col2:
+
+    st.metric(
+        "AI Candidate Data",
+        f"{total_ai_candidate_tb:,.0f} TB"
+    )
+
+with col3:
+
+    st.metric(
+        "AI Candidate %",
+        f"{ai_candidate_pct:.1f}%"
+    )
+
+
+# ------------------------------------------------------------
+# AI WORKLOAD DISTRIBUTION
+# ------------------------------------------------------------
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    ai_summary = (
+        mainframe_df
+        .groupby("AI_Workload_Type")["AI_Candidate_TB"]
+        .sum()
+        .reset_index()
+    )
+
+    fig = px.pie(
+        ai_summary,
+        names="AI_Workload_Type",
+        values="AI_Candidate_TB",
+        hole=0.45,
+        title="AI Candidate Data by Workload Type"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+with col2:
+
+    fig = px.bar(
+        mainframe_df,
+        x="Workload",
+        y="AI_Candidate_TB",
+        color="AI_Workload_Type",
+        title="AI Candidate Data by Mainframe Workload",
+        text_auto=".1f"
+    )
+
+    fig.update_layout(
+        yaxis_title="AI Candidate Data (TB)",
+        xaxis_title="Mainframe Workload"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+
+# ------------------------------------------------------------
+# AI CANDIDATE DETAIL
+# ------------------------------------------------------------
+
+st.subheader("AI Data Pipeline Candidates")
+
+ai_candidate_df = mainframe_df[
+    [
+        "Workload",
+        "Data_TB",
+        "AI_Workload_Type",
+        "AI_Candidate_Pct",
+        "AI_Candidate_TB"
+    ]
+].copy()
+
+ai_candidate_df["AI_Candidate_Pct"] = (
+    ai_candidate_df["AI_Candidate_Pct"] * 100
+)
+
+st.dataframe(
+    ai_candidate_df,
+    use_container_width=True,
+    hide_index=True
+)
+# ------------------------------------------------------------
+# AI CANDIDATE DETAIL
+# ------------------------------------------------------------
+
+st.subheader("AI Data Pipeline Candidates")
+
+ai_candidate_df = mainframe_df[
+    [
+        "Workload",
+        "Data_TB",
+        "AI_Workload_Type",
+        "AI_Candidate_Pct",
+        "AI_Candidate_TB"
+    ]
+].copy()
+
+ai_candidate_df["AI_Candidate_Pct"] = (
+    ai_candidate_df["AI_Candidate_Pct"] * 100
+)
+
+st.dataframe(
+    ai_candidate_df,
     use_container_width=True,
     hide_index=True
 )
