@@ -370,7 +370,40 @@ cold_cost = st.sidebar.number_input(
     step=1.0
 )
 
+st.sidebar.header("AI Infrastructure Assumptions")
 
+model_parameters_b = st.sidebar.selectbox(
+    "AI Model Size (B parameters)",
+    [7, 13, 34, 70, 175],
+    index=3
+)
+
+vram_per_gpu_gb = st.sidebar.selectbox(
+    "GPU VRAM (GB)",
+    [40, 80, 96, 141],
+    index=1
+)
+
+precision_bytes = st.sidebar.selectbox(
+    "Model Precision",
+    [2, 1],
+    index=0,
+    format_func=lambda x: "FP16 / BF16" if x == 2 else "INT8"
+)
+
+transfer_window_minutes = st.sidebar.slider(
+    "Data Transfer Window (minutes)",
+    min_value=30,
+    max_value=480,
+    value=120,
+    step=30
+)
+
+iops_block_kb = st.sidebar.selectbox(
+    "Storage I/O Block Size (KB)",
+    [4, 16, 64, 256],
+    index=2
+)
 # ============================================================
 # CALCULATE STORAGE CAPACITY
 # ============================================================
@@ -555,7 +588,12 @@ total_ai_candidate_tb = (
 # ============================================================
 
 ai_capacity = calculate_ai_capacity(
-    ai_data_tb=total_ai_candidate_tb
+    ai_data_tb=total_ai_candidate_tb,
+    model_parameters_b=model_parameters_b,
+    vram_per_gpu_gb=vram_per_gpu_gb,
+    precision_bytes=precision_bytes,
+    transfer_window_minutes=transfer_window_minutes,
+    iops_block_kb=iops_block_kb
 )
 st.header("AI Infrastructure Capacity Model")
 
