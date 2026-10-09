@@ -2,6 +2,103 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+import numpy as np
+
+
+# ============================================================
+# MAINFRAME WORKLOAD SIMULATOR
+# ============================================================
+
+def generate_mainframe_workloads(seed=42):
+
+    np.random.seed(seed)
+
+    workloads = [
+        {
+            "Workload": "VSAM",
+            "Data_TB": 180,
+            "Daily_Growth_GB": 350,
+            "Peak_IOPS": 85000,
+            "Throughput_GBps": 4.5,
+            "Batch_Window_Min": 70,
+            "SLA_Min": 90,
+            "Access_Frequency": "High",
+            "Primary_Use": "Transactional"
+        },
+        {
+            "Workload": "Db2",
+            "Data_TB": 240,
+            "Daily_Growth_GB": 500,
+            "Peak_IOPS": 125000,
+            "Throughput_GBps": 6.2,
+            "Batch_Window_Min": 95,
+            "SLA_Min": 120,
+            "Access_Frequency": "High",
+            "Primary_Use": "Transactional / Analytical"
+        },
+        {
+            "Workload": "SMF",
+            "Data_TB": 110,
+            "Daily_Growth_GB": 750,
+            "Peak_IOPS": 45000,
+            "Throughput_GBps": 8.5,
+            "Batch_Window_Min": 140,
+            "SLA_Min": 180,
+            "Access_Frequency": "Medium",
+            "Primary_Use": "Performance / Operations"
+        },
+        {
+            "Workload": "Batch",
+            "Data_TB": 75,
+            "Daily_Growth_GB": 280,
+            "Peak_IOPS": 65000,
+            "Throughput_GBps": 3.8,
+            "Batch_Window_Min": 115,
+            "SLA_Min": 120,
+            "Access_Frequency": "Medium",
+            "Primary_Use": "Batch Processing"
+        },
+        {
+            "Workload": "Application Logs",
+            "Data_TB": 95,
+            "Daily_Growth_GB": 900,
+            "Peak_IOPS": 30000,
+            "Throughput_GBps": 5.5,
+            "Batch_Window_Min": 180,
+            "SLA_Min": 240,
+            "Access_Frequency": "Low",
+            "Primary_Use": "Historical / AI"
+        }
+    ]
+
+    df = pd.DataFrame(workloads)
+
+    # Calculate whether the workload is currently
+    # completing inside its batch SLA.
+
+    df["SLA_Status"] = np.where(
+        df["Batch_Window_Min"] <= df["SLA_Min"],
+        "Within SLA",
+        "At Risk"
+    )
+
+    # Estimate annual data growth.
+
+    df["Annual_Growth_TB"] = (
+        df["Daily_Growth_GB"] * 365 / 1024
+    )
+
+    # Projected data after one year.
+
+    df["Projected_1Y_TB"] = (
+        df["Data_TB"] + df["Annual_Growth_TB"]
+    )
+
+    return df
+
+# Generate synthetic mainframe workload data
+
+mainframe_df = generate_mainframe_workloads()
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -155,7 +252,24 @@ annual_savings = (
 # ============================================================
 # EXECUTIVE KPIs
 # ============================================================
+# ============================================================
+# MAINFRAME WORKLOAD VIEW
+# ============================================================
 
+st.header("Mainframe Workload Intelligence")
+
+st.markdown(
+    """
+    Synthetic workload telemetry representing a typical
+    enterprise mainframe environment.
+    """
+)
+
+st.dataframe(
+    mainframe_df,
+    use_container_width=True,
+    hide_index=True
+)
 st.header("Executive Storage View")
 
 col1, col2, col3, col4 = st.columns(4)
