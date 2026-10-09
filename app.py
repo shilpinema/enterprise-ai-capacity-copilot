@@ -220,6 +220,27 @@ def calculate_overall_risk(risk_df):
 
     else:
         return "Low"
+def identify_primary_bottleneck(risk_df):
+
+    risk_priority = {
+        "High": 3,
+        "Medium": 2,
+        "Low": 1
+    }
+
+    risk_df = risk_df.copy()
+
+    risk_df["Risk_Score"] = (
+        risk_df["Risk"].map(risk_priority)
+    )
+
+    highest_score = risk_df["Risk_Score"].max()
+
+    candidates = risk_df[
+        risk_df["Risk_Score"] == highest_score
+    ]
+
+    return candidates.iloc[0]["Area"]
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
@@ -708,12 +729,21 @@ infrastructure_risk_df = analyze_infrastructure_risk(
 overall_risk = calculate_overall_risk(
     infrastructure_risk_df
 )
+primary_bottleneck = identify_primary_bottleneck(
+    infrastructure_risk_df
+)
+st.subheader("Executive Infrastructure Assessment")
 
-st.subheader("Overall Infrastructure Risk")
+risk_col, bottleneck_col = st.columns(2)
 
-st.metric(
-    "AI Infrastructure Risk",
+risk_col.metric(
+    "Overall AI Infrastructure Risk",
     overall_risk
+)
+
+bottleneck_col.metric(
+    "Primary Bottleneck",
+    primary_bottleneck
 )
 st.subheader("Infrastructure Bottleneck & Risk Analysis")
 st.dataframe(
