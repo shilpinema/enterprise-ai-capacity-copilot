@@ -112,7 +112,95 @@ def calculate_ai_capacity(
         "GPU_Count": gpu_count
     }
 
+# ============================================================
+# AI INFRASTRUCTURE RISK ANALYSIS
+# ============================================================
 
+def analyze_infrastructure_risk(capacity):
+
+    risks = []
+
+    # GPU risk
+    if capacity["GPU_Count"] >= 16:
+        risks.append({
+            "Area": "GPU",
+            "Risk": "High",
+            "Reason": "Large GPU footprint required for model training"
+        })
+    elif capacity["GPU_Count"] >= 8:
+        risks.append({
+            "Area": "GPU",
+            "Risk": "Medium",
+            "Reason": "Significant GPU capacity required"
+        })
+    else:
+        risks.append({
+            "Area": "GPU",
+            "Risk": "Low",
+            "Reason": "GPU requirement is relatively modest"
+        })
+
+    # Network risk
+    if capacity["Network_Gbps"] >= 400:
+        risks.append({
+            "Area": "Network",
+            "Risk": "High",
+            "Reason": "High-speed network fabric required"
+        })
+    elif capacity["Network_Gbps"] >= 200:
+        risks.append({
+            "Area": "Network",
+            "Risk": "Medium",
+            "Reason": "High-throughput network connectivity required"
+        })
+    else:
+        risks.append({
+            "Area": "Network",
+            "Risk": "Low",
+            "Reason": "Network requirement is manageable"
+        })
+
+    # Storage IOPS risk
+    if capacity["Required_IOPS"] >= 100000:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "High",
+            "Reason": "Very high storage I/O performance required"
+        })
+    elif capacity["Required_IOPS"] >= 50000:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "Medium",
+            "Reason": "Elevated storage I/O performance required"
+        })
+    else:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "Low",
+            "Reason": "Storage I/O requirement is manageable"
+        })
+
+    # Storage capacity risk
+    if capacity["AI_Storage_TB"] >= 1000:
+        risks.append({
+            "Area": "Storage Capacity",
+            "Risk": "High",
+            "Reason": "Large AI dataset footprint"
+        })
+    elif capacity["AI_Storage_TB"] >= 500:
+        risks.append({
+            "Area": "Storage Capacity",
+            "Risk": "Medium",
+            "Reason": "Significant AI storage footprint"
+        })
+    else:
+        risks.append({
+            "Area": "Storage Capacity",
+            "Risk": "Low",
+            "Reason": "Storage footprint is relatively modest"
+        })
+
+    return pd.DataFrame(risks)
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
@@ -594,6 +682,16 @@ ai_capacity = calculate_ai_capacity(
     precision_bytes=precision_bytes,
     transfer_window_minutes=transfer_window_minutes,
     iops_block_kb=iops_block_kb
+)
+infrastructure_risk_df = analyze_infrastructure_risk(
+    ai_capacity
+)
+st.subheader("Infrastructure Bottleneck & Risk Analysis")
+
+st.dataframe(
+    infrastructure_risk_df,
+    use_container_width=True,
+    hide_index=True
 )
 st.header("AI Infrastructure Capacity Model")
 
