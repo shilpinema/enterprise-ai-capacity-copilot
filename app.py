@@ -73,8 +73,9 @@ def generate_mainframe_workloads(seed=42):
 
     df = pd.DataFrame(workloads)
 
-    # Calculate whether the workload is currently
-    # completing inside its batch SLA.
+    # --------------------------------------------------------
+    # SLA STATUS
+    # --------------------------------------------------------
 
     df["SLA_Status"] = np.where(
         df["Batch_Window_Min"] <= df["SLA_Min"],
@@ -82,66 +83,72 @@ def generate_mainframe_workloads(seed=42):
         "At Risk"
     )
 
-    # Estimate annual data growth.
+    # --------------------------------------------------------
+    # DATA GROWTH
+    # --------------------------------------------------------
 
     df["Annual_Growth_TB"] = (
         df["Daily_Growth_GB"] * 365 / 1024
     )
 
-    # Projected data after one year.
+    df["Projected_1Y_TB"] = (
+        df["Data_TB"] + df["Annual_Growth_TB"]
+    )
 
-    # ============================================================
-# AI WORKLOAD CLASSIFICATION
-# ============================================================
+    # --------------------------------------------------------
+    # AI WORKLOAD CLASSIFICATION
+    # --------------------------------------------------------
 
-def classify_ai_workload(row):
+    def classify_ai_workload(row):
 
-    workload = row["Workload"]
-    access = row["Access_Frequency"]
-    primary_use = row["Primary_Use"]
+        workload = row["Workload"]
 
-    if workload in ["SMF", "Application Logs"]:
-        return "AI Analytics"
+        if workload in ["SMF", "Application Logs"]:
+            return "AI Analytics"
 
-    elif workload == "Db2":
-        return "RAG / Knowledge Retrieval"
+        elif workload in ["Db2", "VSAM"]:
+            return "RAG / Knowledge Retrieval"
 
-    elif workload == "VSAM":
-        return "RAG / Knowledge Retrieval"
+        elif workload == "Batch":
+            return "Model Training"
 
-    elif workload == "Batch":
-        return "Model Training"
+        else:
+            return "Operational / Not AI Prioritized"
 
-    else:
-        return "Operational / Not AI Prioritized"
+    df["AI_Workload_Type"] = df.apply(
+        classify_ai_workload,
+        axis=1
+    )
 
+    # --------------------------------------------------------
+    # AI CANDIDATE PERCENTAGE
+    # --------------------------------------------------------
 
-df["AI_Workload_Type"] = df.apply(
-    classify_ai_workload,
-    axis=1
-)
+    ai_percentage = {
+        "VSAM": 0.35,
+        "Db2": 0.45,
+        "SMF": 0.70,
+        "Batch": 0.25,
+        "Application Logs": 0.60
+    }
 
-# Estimate how much of each workload is suitable
-# for an AI pipeline.
+    df["AI_Candidate_Pct"] = df["Workload"].map(
+        ai_percentage
+    )
 
-ai_percentage = {
-    "VSAM": 0.35,
-    "Db2": 0.45,
-    "SMF": 0.70,
-    "Batch": 0.25,
-    "Application Logs": 0.60
-}
+    # --------------------------------------------------------
+    # AI CANDIDATE DATA VOLUME
+    # --------------------------------------------------------
 
-df["AI_Candidate_Pct"] = df["Workload"].map(
-    ai_percentage
-)
+    df["AI_Candidate_TB"] = (
+        df["Data_TB"] *
+        df["AI_Candidate_Pct"]
+    )
 
-df["AI_Candidate_TB"] = (
-    df["Data_TB"] *
-    df["AI_Candidate_Pct"]
-)
+    # IMPORTANT:
+    # return must remain INSIDE the function
 
-return df
+    return df
 
 # Generate synthetic mainframe workload data
 
