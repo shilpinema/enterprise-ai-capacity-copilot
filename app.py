@@ -201,6 +201,25 @@ def analyze_infrastructure_risk(capacity):
         })
 
     return pd.DataFrame(risks)
+
+def calculate_overall_risk(risk_df):
+
+    high_count = (
+        risk_df["Risk"] == "High"
+    ).sum()
+
+    medium_count = (
+        risk_df["Risk"] == "Medium"
+    ).sum()
+
+    if high_count >= 2:
+        return "High"
+
+    elif high_count == 1 or medium_count >= 2:
+        return "Medium"
+
+    else:
+        return "Low"
 # ============================================================
 # MAINFRAME WORKLOAD SIMULATOR
 # ============================================================
@@ -686,8 +705,17 @@ ai_capacity = calculate_ai_capacity(
 infrastructure_risk_df = analyze_infrastructure_risk(
     ai_capacity
 )
-st.subheader("Infrastructure Bottleneck & Risk Analysis")
+overall_risk = calculate_overall_risk(
+    infrastructure_risk_df
+)
 
+st.subheader("Overall Infrastructure Risk")
+
+st.metric(
+    "AI Infrastructure Risk",
+    overall_risk
+)
+st.subheader("Infrastructure Bottleneck & Risk Analysis")
 st.dataframe(
     infrastructure_risk_df,
     use_container_width=True,
