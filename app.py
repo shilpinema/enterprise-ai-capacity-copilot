@@ -463,6 +463,24 @@ st.set_page_config(
 
 
 # ============================================================
+# EXECUTIVE APP NAVIGATION
+# ============================================================
+
+st.sidebar.title("AI Infrastructure Co-Pilot")
+
+app_page = st.sidebar.radio(
+    "Navigate to",
+    [
+        "Executive Overview",
+        "Capacity & Economics",
+        "Workload Intelligence",
+        "AI Architecture",
+        "Decision Support"
+    ],
+    key="main_app_navigation"
+)
+
+# ============================================================
 # HEADER
 # ============================================================
 
