@@ -2123,3 +2123,195 @@ st.caption(
     "vendor specifications, security requirements, and workload testing."
 )
 
+
+# ============================================================
+# STEP 11 - SENIOR LEADERSHIP TEAM EXECUTIVE DASHBOARD
+# ============================================================
+
+st.divider()
+
+st.header("Executive Dashboard | AI Infrastructure Readiness")
+
+st.caption(
+    "Leadership view of modeled AI capacity, infrastructure risk, "
+    "primary bottleneck, and recommended next actions."
+)
+
+st.info(
+    "This dashboard summarizes the existing planning model. "
+    "It is not a production readiness certification or live telemetry view."
+)
+
+# ------------------------------------------------------------
+# 11.1 - EXECUTIVE ASSESSMENT
+# ------------------------------------------------------------
+
+if "overall_risk" in globals():
+    dashboard_overall_risk = overall_risk
+else:
+    dashboard_overall_risk = "Not available"
+
+if "primary_bottleneck" in globals():
+    dashboard_bottleneck = primary_bottleneck
+else:
+    dashboard_bottleneck = "Not available"
+
+if "recommendation" in globals():
+    dashboard_recommendation = recommendation
+else:
+    dashboard_recommendation = (
+        "Review capacity assumptions and infrastructure risk results."
+    )
+
+st.subheader("1. Executive Assessment")
+
+risk_col, bottleneck_col = st.columns(2)
+
+risk_col.metric(
+    "Overall Infrastructure Risk",
+    dashboard_overall_risk
+)
+
+bottleneck_col.metric(
+    "Primary Bottleneck",
+    dashboard_bottleneck
+)
+
+st.markdown("**Recommended Priority Action**")
+st.write(dashboard_recommendation)
+
+# ------------------------------------------------------------
+# 11.2 - CAPACITY SCORECARD
+# ------------------------------------------------------------
+
+st.subheader("2. AI Infrastructure Capacity Scorecard")
+
+if "ai_capacity" in globals():
+
+    capacity_col1, capacity_col2, capacity_col3 = st.columns(3)
+
+    capacity_col1.metric(
+        "AI Dataset",
+        f'{ai_capacity["AI_Data_TB"]:,.1f} TB'
+    )
+
+    capacity_col2.metric(
+        "Estimated AI Storage",
+        f'{ai_capacity["AI_Storage_TB"]:,.1f} TB'
+    )
+
+    capacity_col3.metric(
+        "Estimated GPU Count",
+        f'{ai_capacity["GPU_Count"]:,}'
+    )
+
+    capacity_col4, capacity_col5, capacity_col6 = st.columns(3)
+
+    capacity_col4.metric(
+        "Required Storage IOPS",
+        f'{ai_capacity["Required_IOPS"]:,.0f}'
+    )
+
+    capacity_col5.metric(
+        "Storage Throughput",
+        f'{ai_capacity["Storage_Throughput_Gbps"]:,.1f} Gbps'
+    )
+
+    capacity_col6.metric(
+        "Network Bandwidth",
+        f'{ai_capacity["Network_Gbps"]:,.1f} Gbps'
+    )
+
+else:
+    st.warning(
+        "Capacity results are not available in this section. "
+        "Review the scope of the existing ai_capacity variable."
+    )
+
+# ------------------------------------------------------------
+# 11.3 - RISK BREAKDOWN
+# ------------------------------------------------------------
+
+st.subheader("3. Infrastructure Risk Breakdown")
+
+if "infrastructure_risk_df" in globals():
+
+    st.dataframe(
+        infrastructure_risk_df,
+        use_container_width=True,
+        hide_index=True
+    )
+
+else:
+    st.warning(
+        "The infrastructure risk table is not available in this section. "
+        "Review the scope of infrastructure_risk_df."
+    )
+
+# ------------------------------------------------------------
+# 11.4 - LEADERSHIP DECISION GUIDE
+# ------------------------------------------------------------
+
+st.subheader("4. Leadership Decision Guide")
+
+decision_guidance = {
+    "Storage IOPS": (
+        "Validate storage I/O demand, latency, and parallel throughput "
+        "against the target storage platform."
+    ),
+    "Network": (
+        "Validate effective transfer bandwidth, network contention, "
+        "and the required data movement window."
+    ),
+    "GPU": (
+        "Validate GPU memory, compute requirements, model configuration, "
+        "and training or inference concurrency."
+    ),
+    "Storage Capacity": (
+        "Validate usable capacity, data retention, replication, "
+        "growth assumptions, and storage tiering."
+    )
+}
+
+if dashboard_bottleneck in decision_guidance:
+    st.write(decision_guidance[dashboard_bottleneck])
+else:
+    st.write(
+        "Review the primary bottleneck and validate the relevant "
+        "infrastructure assumptions before committing investment."
+    )
+
+st.markdown("**Before approving an infrastructure design:**")
+
+st.markdown(
+    "- Validate the model against actual workload telemetry.\n"
+    "- Confirm storage, network, and GPU specifications with vendors.\n"
+    "- Test representative workloads and expected peak demand.\n"
+    "- Confirm security, governance, availability, and recovery requirements."
+)
+
+# ------------------------------------------------------------
+# 11.5 - EXECUTIVE CAVEATS
+# ------------------------------------------------------------
+
+with st.expander("Executive Assumptions and Limitations"):
+
+    st.markdown(
+        """
+        - Workload data is synthetic and used for demonstration.
+        - AI-eligible data is estimated using assumed source percentages.
+        - AI storage uses a fixed multiplier.
+        - IOPS and throughput are theoretical estimates, not measured
+          production workload characteristics.
+        - GPU requirements use a simplified training-memory heuristic.
+        - Risk classifications use illustrative thresholds.
+        - Recommendations are deterministic rules, not LLM-generated
+          advice or automated infrastructure actions.
+
+        **Executive interpretation:** Use this dashboard to structure
+        capacity planning and identify questions requiring validation.
+        Do not use it alone to approve production infrastructure
+        procurement or certify production readiness.
+        """
+    )
+
