@@ -830,41 +830,43 @@ st.caption(
     "before making production infrastructure decisions."
 )
 
+
 st.markdown("### Key Capacity Requirements")
 
 col1, col2, col3 = st.columns(3)
 
 col1.metric(
     "AI Dataset",
-    f'{capacity["AI_Data_TB"]:,.1f} TB'
+    f'{ai_capacity["AI_Data_TB"]:,.1f} TB'
 )
 
 col2.metric(
     "Estimated AI Storage",
-    f'{capacity["AI_Storage_TB"]:,.1f} TB'
+    f'{ai_capacity["AI_Storage_TB"]:,.1f} TB'
 )
 
 col3.metric(
     "Estimated GPU Count",
-    f'{capacity["GPU_Count"]:,}'
+    f'{ai_capacity["GPU_Count"]:,}'
 )
 
 col4, col5, col6 = st.columns(3)
 
 col4.metric(
     "Required Storage IOPS",
-    f'{capacity["Required_IOPS"]:,.0f}'
+    f'{ai_capacity["Required_IOPS"]:,.0f}'
 )
 
 col5.metric(
     "Storage Throughput",
-    f'{capacity["Storage_Throughput_Gbps"]:,.1f} Gbps'
+    f'{ai_capacity["Storage_Throughput_Gbps"]:,.1f} Gbps'
 )
 
 col6.metric(
     "Network Bandwidth",
-    f'{capacity["Network_Gbps"]:,.1f} Gbps'
+    f'{ai_capacity["Network_Gbps"]:,.1f} Gbps'
 )
+
 
 st.subheader("Executive Infrastructure Assessment")
 
