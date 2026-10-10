@@ -812,7 +812,10 @@ st.dataframe(
 st.header("AI Infrastructure Capacity Model")
 
 col1, col2, col3, col4 = st.columns(4)
-
+st.metric(
+    "Required Storage Throughput",
+    f"{ai_capacity['Storage_Throughput_Gbps']:.1f} Gbps"
+)
 col1.metric(
     "AI Data",
     f"{ai_capacity['AI_Data_TB']:.1f} TB"
