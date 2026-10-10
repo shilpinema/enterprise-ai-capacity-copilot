@@ -1229,3 +1229,317 @@ st.caption(
     "Enterprise Hybrid AI & Mainframe Storage/Capacity Co-Pilot "
     "| Synthetic planning model"
 )
+
+
+# ============================================================
+# STEP 8 - AI DATA PIPELINE ARCHITECTURE
+# ============================================================
+
+st.divider()
+
+st.header("AI Data Pipeline Architecture")
+
+st.caption(
+    "Plan the movement of enterprise mainframe data into AI-ready "
+    "data products and downstream AI infrastructure."
+)
+
+st.info(
+    "Prototype only: this section models an illustrative architecture. "
+    "It does not connect to live mainframe, AWS, or cloud data services."
+)
+
+# ------------------------------------------------------------
+# 8.1 - MAINFRAME DATA SOURCES
+# ------------------------------------------------------------
+
+pipeline_sources = pd.DataFrame([
+    {
+        "Source": "VSAM",
+        "Data Type": "Operational records",
+        "Potential AI Use": "Operational pattern analysis",
+        "Default Ingestion": "Batch extract"
+    },
+    {
+        "Source": "Db2",
+        "Data Type": "Structured business data",
+        "Potential AI Use": "Predictive analytics",
+        "Default Ingestion": "Batch or CDC"
+    },
+    {
+        "Source": "SMF",
+        "Data Type": "System and performance records",
+        "Potential AI Use": "Capacity and anomaly analysis",
+        "Default Ingestion": "Batch or streaming"
+    },
+    {
+        "Source": "Batch",
+        "Data Type": "Job execution records",
+        "Potential AI Use": "Job performance analysis",
+        "Default Ingestion": "Batch extract"
+    },
+    {
+        "Source": "Application Logs",
+        "Data Type": "Events and messages",
+        "Potential AI Use": "Incident analysis and retrieval",
+        "Default Ingestion": "Batch or streaming"
+    }
+])
+
+st.subheader("1. Mainframe Data Sources")
+
+st.dataframe(
+    pipeline_sources,
+    use_container_width=True,
+    hide_index=True
+)
+
+# ------------------------------------------------------------
+# 8.2 - VISUAL PIPELINE ARCHITECTURE
+# ------------------------------------------------------------
+
+st.subheader("2. End-to-End Pipeline Architecture")
+
+pipeline_layers = [
+    {
+        "name": "Mainframe Sources",
+        "detail": "VSAM | Db2 | SMF | Batch | Application Logs"
+    },
+    {
+        "name": "Ingestion",
+        "detail": "Batch extraction | CDC | Streaming"
+    },
+    {
+        "name": "Raw Data Layer",
+        "detail": "Source-preserved data and ingestion metadata"
+    },
+    {
+        "name": "Transformation",
+        "detail": "Parsing | Normalization | Schema mapping"
+    },
+    {
+        "name": "Data Quality & Governance",
+        "detail": "Validation | Access controls | Sensitive-data handling"
+    },
+    {
+        "name": "AI-Ready Data",
+        "detail": "Curated datasets | Documents | Features"
+    },
+    {
+        "name": "AI Consumption",
+        "detail": "Analytics | Model training | Inference | Retrieval"
+    }
+]
+
+for index, layer in enumerate(pipeline_layers):
+    with st.container(border=True):
+        st.markdown(f"**{index + 1}. {layer['name']}**")
+        st.caption(layer["detail"])
+
+    if index < len(pipeline_layers) - 1:
+        st.markdown(
+            "<div style='text-align:center; font-size:24px;'>↓</div>",
+            unsafe_allow_html=True
+        )
+
+# ------------------------------------------------------------
+# 8.3 - INTERACTIVE INGESTION PLANNING
+# ------------------------------------------------------------
+
+st.subheader("3. Ingestion Planning")
+
+source_options = pipeline_sources["Source"].tolist()
+
+selected_source = st.selectbox(
+    "Select a mainframe source",
+    source_options,
+    key="step8_selected_source"
+)
+
+ingestion_options = [
+    "Batch extraction",
+    "Change Data Capture (CDC)",
+    "Streaming"
+]
+
+selected_ingestion = st.selectbox(
+    "Select an ingestion method",
+    ingestion_options,
+    key="step8_selected_ingestion"
+)
+
+ingestion_guidance = {
+    "Batch extraction": (
+        "Suitable for scheduled extracts and periodic processing. "
+        "Define batch windows, restartability, reconciliation, and "
+        "source-system impact controls."
+    ),
+    "Change Data Capture (CDC)": (
+        "Suitable when supported source changes must be captured "
+        "incrementally. Validate source support, log access, ordering, "
+        "recovery, and replication latency."
+    ),
+    "Streaming": (
+        "Suitable for event-driven use cases that need low-latency "
+        "delivery. Validate event support, throughput, ordering, "
+        "backpressure, and replay behavior."
+    )
+}
+
+selected_source_row = pipeline_sources[
+    pipeline_sources["Source"] == selected_source
+].iloc[0]
+
+st.markdown("**Selected source profile**")
+st.write(
+    f"Data type: {selected_source_row['Data Type']}"
+)
+st.write(
+    f"Potential AI use: {selected_source_row['Potential AI Use']}"
+)
+
+st.info(ingestion_guidance[selected_ingestion])
+
+# ------------------------------------------------------------
+# 8.4 - TRANSFORMATION, QUALITY, AND DESTINATION PLANNING
+# ------------------------------------------------------------
+
+st.subheader("4. Transformation and Data Quality")
+
+st.markdown(
+    "Select the controls that should be included in the proposed pipeline."
+)
+
+quality_schema = st.checkbox(
+    "Schema and format validation",
+    value=True,
+    key="step8_schema_validation"
+)
+
+quality_completeness = st.checkbox(
+    "Completeness and record-count reconciliation",
+    value=True,
+    key="step8_completeness"
+)
+
+quality_sensitive = st.checkbox(
+    "Sensitive-data identification and access controls",
+    value=True,
+    key="step8_sensitive_data"
+)
+
+quality_lineage = st.checkbox(
+    "Data lineage and ingestion metadata",
+    value=True,
+    key="step8_lineage"
+)
+
+destination_options = [
+    "Object storage / data lake",
+    "Curated analytical tables",
+    "Document store for retrieval",
+    "Feature store",
+    "Multiple destinations"
+]
+
+selected_destination = st.selectbox(
+    "Select the intended AI-ready destination",
+    destination_options,
+    key="step8_destination"
+)
+
+st.markdown("**Proposed pipeline configuration**")
+
+configuration = {
+    "Source": selected_source,
+    "Ingestion Method": selected_ingestion,
+    "Destination": selected_destination,
+    "Schema Validation": quality_schema,
+    "Completeness Reconciliation": quality_completeness,
+    "Sensitive-Data Controls": quality_sensitive,
+    "Lineage and Metadata": quality_lineage
+}
+
+st.dataframe(
+    pd.DataFrame(
+        [
+            {"Setting": name, "Selected Value": value}
+            for name, value in configuration.items()
+        ]
+    ),
+    use_container_width=True,
+    hide_index=True
+)
+
+# ------------------------------------------------------------
+# 8.5 - CONNECTION TO EXISTING CAPACITY PLANNING
+# ------------------------------------------------------------
+
+st.subheader("5. Pipeline-to-Infrastructure Considerations")
+
+st.markdown(
+    "Pipeline design should be checked against the capacity estimates "
+    "from Step 7. The following metrics are shown only when the existing "
+    "capacity result is available."
+)
+
+if "ai_capacity" in globals():
+
+    cap_col1, cap_col2, cap_col3 = st.columns(3)
+
+    cap_col1.metric(
+        "AI Dataset",
+        f'{ai_capacity["AI_Data_TB"]:,.1f} TB'
+    )
+
+    cap_col2.metric(
+        "Storage Throughput",
+        f'{ai_capacity["Storage_Throughput_Gbps"]:,.1f} Gbps'
+    )
+
+    cap_col3.metric(
+        "Network Bandwidth",
+        f'{ai_capacity["Network_Gbps"]:,.1f} Gbps'
+    )
+
+    st.caption(
+        "These are theoretical planning estimates from Step 7, not "
+        "measured pipeline throughput or a guarantee of transfer time."
+    )
+
+else:
+    st.warning(
+        "The existing ai_capacity result was not found in the current "
+        "application scope. Pipeline planning remains available, but "
+        "capacity metrics are not displayed in this section."
+    )
+
+st.markdown("**Architecture validation checklist**")
+
+st.checkbox(
+    "Confirm source-system access and extraction constraints",
+    key="step8_check_source"
+)
+
+st.checkbox(
+    "Define transfer window, throughput, and latency objectives",
+    key="step8_check_performance"
+)
+
+st.checkbox(
+    "Define data quality, governance, and security requirements",
+    key="step8_check_governance"
+)
+
+st.checkbox(
+    "Validate destination compatibility with the intended AI workload",
+    key="step8_check_destination"
+)
+
+st.warning(
+    "Production readiness requires real source integration, operational "
+    "monitoring, failure recovery, security testing, and measured "
+    "performance validation. Selecting controls here records a planning "
+    "configuration; it does not execute pipeline operations."
+)
+
