@@ -172,6 +172,8 @@ def analyze_infrastructure_risk(capacity):
 
    
     
+
+    
 # Storage IOPS risk
 if capacity["Required_IOPS"] >= 500000:
     risks.append({
