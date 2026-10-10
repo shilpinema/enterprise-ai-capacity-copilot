@@ -36,18 +36,27 @@ def calculate_ai_capacity(
     # 2. STORAGE IOPS
     # --------------------------------------------------------
 
+        # 2. STORAGE THROUGHPUT AND IOPS
+
     total_bytes = ai_data_tb * 1_000_000_000_000
-
     block_bytes = iops_block_kb * 1024
-
     seconds = transfer_window_minutes * 60
 
-    required_iops = (
-        total_bytes /
-        block_bytes /
-        seconds
+    # Average throughput needed to scan the entire dataset
+    required_throughput_bytes_sec = (
+        total_bytes / seconds
     )
 
+    # Approximate IOPS for sequential full-dataset scanning
+    required_iops = (
+        required_throughput_bytes_sec / block_bytes
+    )
+
+    # Convert bytes per second to decimal Gbps
+    required_throughput_gbps = (
+        required_throughput_bytes_sec
+        * 8 / 1_000_000_000
+    )
 
     # --------------------------------------------------------
     # 3. NETWORK BANDWIDTH
@@ -102,6 +111,7 @@ def calculate_ai_capacity(
         "AI_Storage_TB": ai_storage_tb,
 
         "Required_IOPS": required_iops,
+        "Storage_Throughput_Gbps": required_throughput_gbps,
 
         "Network_Gbps": network_gbps,
 
