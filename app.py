@@ -463,6 +463,158 @@ st.set_page_config(
 
 
 # ============================================================
+# ENTERPRISE EXECUTIVE VISUAL DESIGN
+# ============================================================
+st.markdown("""
+<style>
+    :root {
+        --navy: #10243A;
+        --navy-soft: #183B56;
+        --teal: #12B8A6;
+        --teal-soft: #E5F7F4;
+        --ink: #182536;
+        --muted: #66788A;
+        --line: #DCE5ED;
+        --panel: #FFFFFF;
+        --canvas: #F4F7FB;
+    }
+
+    .stApp {
+        background:
+            radial-gradient(ellipse at 8% 0%, rgba(18,184,166,.08), transparent 32%),
+            var(--canvas);
+        color: var(--ink);
+    }
+
+    [data-testid="stHeader"] {
+        background: rgba(244,247,251,.92);
+    }
+
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #10243A 0%, #173B55 100%);
+        border-right: 1px solid rgba(255,255,255,.12);
+    }
+    [data-testid="stSidebar"] * {
+        color: #F3F7FB;
+    }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+        color: #D8E4EE;
+    }
+    [data-testid="stSidebar"] [data-baseweb="radio"] label {
+        padding: .55rem .7rem;
+        border-radius: 9px;
+    }
+    [data-testid="stSidebar"] [data-baseweb="radio"] label:hover {
+        background: rgba(255,255,255,.09);
+    }
+    [data-testid="stSidebar"] [data-testid="stSlider"] {
+        padding-bottom: .25rem;
+    }
+
+    h1, h2, h3 {
+        color: var(--navy) !important;
+        letter-spacing: -.025em;
+    }
+    h1 {
+        font-weight: 800 !important;
+        line-height: 1.15 !important;
+    }
+    h2, h3 {
+        font-weight: 700 !important;
+    }
+    p, li, label {
+        line-height: 1.55;
+    }
+
+    [data-testid="stMetric"] {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--teal);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 5px 18px rgba(16,36,58,.045);
+        min-height: 112px;
+    }
+    [data-testid="stMetricLabel"] {
+        color: var(--muted) !important;
+        font-size: .82rem !important;
+        font-weight: 650 !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: var(--navy) !important;
+        font-weight: 800 !important;
+        letter-spacing: -.035em;
+    }
+
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(255,255,255,.92);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        box-shadow: 0 5px 18px rgba(16,36,58,.035);
+    }
+    [data-testid="stDataFrame"], [data-testid="stTable"] {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    [data-testid="stExpander"] {
+        background: rgba(255,255,255,.85);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+    }
+    [data-testid="stAlert"] {
+        border-radius: 12px;
+    }
+    .stButton > button {
+        border-radius: 9px;
+        font-weight: 650;
+        border: 1px solid #C9D8E5;
+    }
+    [data-testid="stPlotlyChart"] {
+        background: #FFFFFF;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: .45rem;
+        box-shadow: 0 5px 18px rgba(16,36,58,.035);
+    }
+    hr {
+        border-color: var(--line);
+    }
+    .executive-hero {
+        background: linear-gradient(120deg, #10243A 0%, #183B56 72%, #176D75 100%);
+        color: #FFFFFF;
+        padding: 1.6rem 1.8rem;
+        border-radius: 18px;
+        margin: .2rem 0 1.3rem 0;
+        box-shadow: 0 12px 30px rgba(16,36,58,.14);
+    }
+    .executive-hero h2 {
+        color: #FFFFFF !important;
+        margin: 0 0 .4rem 0;
+        font-size: 1.65rem;
+    }
+    .executive-hero p {
+        color: #E0EDF5;
+        margin: .2rem 0 0 0;
+        font-size: 1rem;
+    }
+    .eyebrow {
+        color: #70E0D2;
+        text-transform: uppercase;
+        letter-spacing: .13em;
+        font-size: .72rem;
+        font-weight: 800;
+        margin-bottom: .55rem;
+    }
+    @media (max-width: 800px) {
+        .executive-hero { padding: 1.1rem; }
+        .executive-hero h2 { font-size: 1.3rem; }
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
 # EXECUTIVE APP NAVIGATION
 # ============================================================
 
@@ -484,11 +636,13 @@ app_page = st.sidebar.radio(
 # HEADER
 # ============================================================
 
-st.title("⚡ Enterprise Hybrid AI & Mainframe Capacity Co-Pilot")
-
-st.markdown(
-    "*From mainframe storage and capacity engineering to AI infrastructure planning.*"
-)
+st.markdown("""
+<div class="executive-hero">
+    <div class="eyebrow">Enterprise Infrastructure Planning</div>
+    <h2>Hybrid AI &amp; Mainframe Capacity Co-Pilot</h2>
+    <p>Extend proven storage, performance, and capacity disciplines into AI infrastructure planning.</p>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ============================================================
@@ -696,6 +850,7 @@ recommendation = generate_infrastructure_recommendation(
 # ============================================================
 # ============================================================
 if app_page == "Workload Intelligence":
+    st.caption("WORKLOAD INTELLIGENCE  •  Mainframe performance patterns and AI-eligible data")
     # MAINFRAME WORKLOAD VIEW
     # ============================================================
 
@@ -832,6 +987,7 @@ if app_page == "Workload Intelligence":
 
 
 if app_page == "Capacity & Economics":
+    st.caption("CAPACITY & COST  •  Storage distribution, tier economics, and AI sizing assumptions")
     st.subheader("Executive AI Infrastructure Capacity Summary")
 
     st.markdown(
@@ -1260,6 +1416,7 @@ if app_page == "Capacity & Economics":
     # ============================================================
 
 if app_page == "AI Architecture":
+    st.caption("REFERENCE ARCHITECTURE  •  Data movement, governance, and infrastructure dependencies")
     # STEP 8 - AI DATA PIPELINE ARCHITECTURE
     # ============================================================
 
@@ -1912,6 +2069,7 @@ if app_page == "AI Architecture":
     # ============================================================
 
 if app_page == "Decision Support":
+    st.caption("DECISION SUPPORT  •  Evidence-led recommendations and validation actions")
     # STEP 10 - AI DECISION-SUPPORT CO-PILOT
     # ============================================================
 
@@ -2157,6 +2315,7 @@ if app_page == "Decision Support":
     # ============================================================
 
 if app_page == "Executive Overview":
+    st.caption("LEADERSHIP BRIEF  •  Capacity outlook, modeled risk, and recommended priorities")
     # STEP 11 - SENIOR LEADERSHIP TEAM EXECUTIVE DASHBOARD
     # ============================================================
 
