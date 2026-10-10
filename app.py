@@ -868,6 +868,38 @@ col6.metric(
 )
 
 
+with st.expander("Sizing Assumptions & Limitations"):
+
+    st.markdown(
+        """
+        **Data assumptions**
+        - AI-eligible data is estimated using a constant percentage
+          of the selected total dataset size.
+        - AI storage is estimated at 1.5 times the AI dataset size.
+
+        **Performance assumptions**
+        - Storage throughput and network bandwidth are theoretical
+          averages based on the selected transfer window.
+        - Required IOPS is derived from modeled throughput and the
+          selected I/O block size; it is not measured workload IOPS.
+        - GPU count uses estimated training memory divided by the
+          selected GPU VRAM, rounded up to a whole GPU.
+
+        **Validation required before production use**
+        - Validate storage throughput, IOPS, and latency against
+          actual workload measurements and vendor specifications.
+        - Validate network bandwidth against the target architecture
+          and protocol overhead.
+        - Validate GPU requirements against model architecture,
+          training strategy, parallelism, and framework overhead.
+
+        **Classification**
+        This application is a capacity-planning prototype using
+        synthetic workload data and deterministic rules. Its outputs
+        are not production sizing guarantees.
+        """
+    )
+
 st.subheader("Executive Infrastructure Assessment")
 
 risk_col, bottleneck_col = st.columns(2)
