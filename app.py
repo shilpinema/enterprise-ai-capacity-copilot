@@ -126,6 +126,7 @@ def calculate_ai_capacity(
 # AI INFRASTRUCTURE RISK ANALYSIS
 # ============================================================
 
+
 def analyze_infrastructure_risk(capacity):
 
     risks = []
@@ -170,29 +171,25 @@ def analyze_infrastructure_risk(capacity):
             "Reason": "Network requirement is manageable"
         })
 
-   
-    
-
-    
-# Storage IOPS risk
-if capacity["Required_IOPS"] >= 500000:
-    risks.append({
-        "Area": "Storage IOPS",
-        "Risk": "High",
-        "Reason": "Very high storage I/O demand; validate against target storage capability"
-    })
-elif capacity["Required_IOPS"] >= 100000:
-    risks.append({
-        "Area": "Storage IOPS",
-        "Risk": "Medium",
-        "Reason": "Elevated storage I/O demand; verify throughput and latency targets"
-    })
-else:
-    risks.append({
-        "Area": "Storage IOPS",
-        "Risk": "Low",
-        "Reason": "Lower modeled storage I/O demand; validate against workload requirements"
-    })
+    # Storage IOPS risk
+    if capacity["Required_IOPS"] >= 500000:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "High",
+            "Reason": "Very high storage I/O demand; validate against target storage capability"
+        })
+    elif capacity["Required_IOPS"] >= 100000:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "Medium",
+            "Reason": "Elevated storage I/O demand; verify throughput and latency targets"
+        })
+    else:
+        risks.append({
+            "Area": "Storage IOPS",
+            "Risk": "Low",
+            "Reason": "Lower modeled storage I/O demand; validate against workload requirements"
+        })
 
     # Storage capacity risk
     if capacity["AI_Storage_TB"] >= 1000:
@@ -215,7 +212,6 @@ else:
         })
 
     return pd.DataFrame(risks)
-
 def calculate_overall_risk(risk_df):
 
     high_count = (
