@@ -231,6 +231,7 @@ def calculate_overall_risk(risk_df):
 
     else:
         return "Low"
+
 def identify_primary_bottleneck(risk_df):
 
     risk_priority = {
@@ -239,19 +240,29 @@ def identify_primary_bottleneck(risk_df):
         "Low": 1
     }
 
+    bottleneck_priority = {
+        "Storage IOPS": 4,
+        "Network": 3,
+        "GPU": 2,
+        "Storage Capacity": 1
+    }
+
     risk_df = risk_df.copy()
 
     risk_df["Risk_Score"] = (
         risk_df["Risk"].map(risk_priority)
     )
 
-    highest_score = risk_df["Risk_Score"].max()
+    risk_df["Bottleneck_Priority"] = (
+        risk_df["Area"].map(bottleneck_priority)
+    )
 
-    candidates = risk_df[
-        risk_df["Risk_Score"] == highest_score
-    ]
+    risk_df = risk_df.sort_values(
+        by=["Risk_Score", "Bottleneck_Priority"],
+        ascending=[False, False]
+    )
 
-    return candidates.iloc[0]["Area"]
+    return risk_df.iloc[0]["Area"]
 def generate_infrastructure_recommendation(
     primary_bottleneck,
     overall_risk
