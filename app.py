@@ -810,6 +810,26 @@ recommendation = generate_infrastructure_recommendation(
     overall_risk
 )
 
+st.subheader("Executive AI Infrastructure Capacity Summary")
+
+st.markdown(
+    f"""
+    **Executive Assessment:** The modeled AI infrastructure has an
+    overall risk level of **{overall_risk}**.
+
+    **Primary Bottleneck:** {primary_bottleneck}
+
+    **Recommended Action:** {recommendation}
+    """
+)
+
+st.caption(
+    "Planning estimate based on synthetic workload data and "
+    "deterministic sizing assumptions. Validate against actual "
+    "workload telemetry, vendor specifications, and performance targets "
+    "before making production infrastructure decisions."
+)
+
 st.subheader("Executive Infrastructure Assessment")
 
 risk_col, bottleneck_col = st.columns(2)
