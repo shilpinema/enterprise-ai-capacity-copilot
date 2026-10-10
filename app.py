@@ -1543,3 +1543,340 @@ st.warning(
     "configuration; it does not execute pipeline operations."
 )
 
+
+# ============================================================
+# STEP 9 - INTERACTIVE ARCHITECTURE VISUALIZATION
+# ============================================================
+
+st.divider()
+
+st.header("Interactive AI Infrastructure Architecture")
+
+st.caption(
+    "Explore how mainframe data flows through the AI data pipeline "
+    "and connects to infrastructure capacity requirements."
+)
+
+st.info(
+    "This is an interactive architecture model. It does not represent "
+    "live connections, deployed services, or real-time telemetry."
+)
+
+# ------------------------------------------------------------
+# 9.1 - DEFINE ARCHITECTURE COMPONENTS
+# ------------------------------------------------------------
+
+architecture_components = {
+    "Mainframe Sources": {
+        "layer": "Data Sources",
+        "description": (
+            "Enterprise data originating from VSAM, Db2, SMF, "
+            "batch processing, and application logs."
+        ),
+        "dependency": (
+            "Source access, extraction windows, record formats, "
+            "and mainframe processing constraints."
+        )
+    },
+    "Ingestion": {
+        "layer": "Data Movement",
+        "description": (
+            "Batch extraction, change data capture, or streaming "
+            "moves supported source data into the target platform."
+        ),
+        "dependency": (
+            "Transfer throughput, source impact, connectivity, "
+            "recovery, and delivery latency."
+        )
+    },
+    "Raw Data": {
+        "layer": "Data Storage",
+        "description": (
+            "Preserves ingested data and source metadata for "
+            "reconciliation, replay, and downstream processing."
+        ),
+        "dependency": (
+            "Landing-zone storage capacity, write throughput, "
+            "retention, and access controls."
+        )
+    },
+    "Transformation": {
+        "layer": "Data Processing",
+        "description": (
+            "Parses, normalizes, enriches, and transforms source "
+            "records into consistent data structures."
+        ),
+        "dependency": (
+            "CPU or compute capacity, memory, processing time, "
+            "schema handling, and data volume."
+        )
+    },
+    "Data Quality & Governance": {
+        "layer": "Controls",
+        "description": (
+            "Validates data completeness and quality, tracks lineage, "
+            "and applies security and sensitive-data controls."
+        ),
+        "dependency": (
+            "Validation rules, identity and access management, "
+            "auditability, and governance policies."
+        )
+    },
+    "AI-Ready Data": {
+        "layer": "Curated Data",
+        "description": (
+            "Produces curated datasets, documents, or features "
+            "suitable for approved AI use cases."
+        ),
+        "dependency": (
+            "Curated storage, metadata, retrieval preparation, "
+            "and data freshness requirements."
+        )
+    },
+    "AI Infrastructure": {
+        "layer": "Compute and Network",
+        "description": (
+            "Provides storage, network connectivity, GPU compute, "
+            "and memory for model training or inference."
+        ),
+        "dependency": (
+            "Storage IOPS and throughput, network bandwidth, "
+            "GPU memory, GPU count, and workload concurrency."
+        )
+    }
+}
+
+architecture_order = list(architecture_components.keys())
+
+# ------------------------------------------------------------
+# 9.2 - DRAW THE ARCHITECTURE FLOW
+# ------------------------------------------------------------
+
+st.subheader("1. End-to-End Architecture")
+
+st.markdown(
+    "Select a component below the diagram to inspect its role "
+    "and infrastructure dependencies."
+)
+
+# First row
+row1 = st.columns(3)
+
+with row1[0]:
+    with st.container(border=True):
+        st.markdown("**1. Mainframe Sources**")
+        st.caption("VSAM · Db2 · SMF · Batch · Logs")
+
+with row1[1]:
+    with st.container(border=True):
+        st.markdown("**2. Ingestion**")
+        st.caption("Batch · CDC · Streaming")
+
+with row1[2]:
+    with st.container(border=True):
+        st.markdown("**3. Raw Data**")
+        st.caption("Landing zone · Source metadata")
+
+st.markdown(
+    "<div style='text-align:center; font-size:24px;'>"
+    "↓ Data preparation and controls ↓"
+    "</div>",
+    unsafe_allow_html=True
+)
+
+# Second row
+row2 = st.columns(2)
+
+with row2[0]:
+    with st.container(border=True):
+        st.markdown("**4. Transformation**")
+        st.caption("Parsing · Normalization · Enrichment")
+
+with row2[1]:
+    with st.container(border=True):
+        st.markdown("**5. Data Quality & Governance**")
+        st.caption("Validation · Security · Lineage")
+
+st.markdown(
+    "<div style='text-align:center; font-size:24px;'>"
+    "↓ Curated AI data ↓"
+    "</div>",
+    unsafe_allow_html=True
+)
+
+# Third row
+row3 = st.columns(2)
+
+with row3[0]:
+    with st.container(border=True):
+        st.markdown("**6. AI-Ready Data**")
+        st.caption("Curated datasets · Documents · Features")
+
+with row3[1]:
+    with st.container(border=True):
+        st.markdown("**7. AI Infrastructure**")
+        st.caption("Storage · Network · GPU compute")
+
+# ------------------------------------------------------------
+# 9.3 - INTERACTIVE COMPONENT EXPLORER
+# ------------------------------------------------------------
+
+st.subheader("2. Explore Architecture Components")
+
+selected_component = st.selectbox(
+    "Choose a component",
+    architecture_order,
+    key="step9_selected_component"
+)
+
+component_details = architecture_components[selected_component]
+
+st.markdown(f"### {selected_component}")
+
+st.write(
+    f"**Architecture layer:** {component_details['layer']}"
+)
+
+st.write(
+    f"**Purpose:** {component_details['description']}"
+)
+
+st.write(
+    f"**Infrastructure dependencies:** "
+    f"{component_details['dependency']}"
+)
+
+# ------------------------------------------------------------
+# 9.4 - PIPELINE-TO-INFRASTRUCTURE DEPENDENCY VIEW
+# ------------------------------------------------------------
+
+st.subheader("3. Pipeline and Infrastructure Dependencies")
+
+dependency_rows = [
+    {
+        "Pipeline Concern": "Data transfer",
+        "Infrastructure Dependency": "Network bandwidth",
+        "Planning Question": (
+            "Can the data be transferred within the required window?"
+        )
+    },
+    {
+        "Pipeline Concern": "Data landing and retention",
+        "Infrastructure Dependency": "Storage capacity and throughput",
+        "Planning Question": (
+            "Can storage handle the incoming data volume and write rate?"
+        )
+    },
+    {
+        "Pipeline Concern": "Transformation and scans",
+        "Infrastructure Dependency": "Compute and storage IOPS",
+        "Planning Question": (
+            "Can processing meet the required completion time?"
+        )
+    },
+    {
+        "Pipeline Concern": "Model training",
+        "Infrastructure Dependency": "GPU memory and GPU capacity",
+        "Planning Question": (
+            "Can the selected model and training strategy fit the available resources?"
+        )
+    },
+    {
+        "Pipeline Concern": "AI inference and retrieval",
+        "Infrastructure Dependency": "Network, memory, and data access",
+        "Planning Question": (
+            "Can data and model responses meet the target latency?"
+        )
+    }
+]
+
+st.dataframe(
+    pd.DataFrame(dependency_rows),
+    use_container_width=True,
+    hide_index=True
+)
+
+# ------------------------------------------------------------
+# 9.5 - EXISTING CAPACITY MODEL INTEGRATION
+# ------------------------------------------------------------
+
+st.subheader("4. Capacity Planning Reference")
+
+if "ai_capacity" in globals():
+
+    metric1, metric2, metric3 = st.columns(3)
+
+    metric1.metric(
+        "AI Dataset",
+        f'{ai_capacity["AI_Data_TB"]:,.1f} TB'
+    )
+
+    metric2.metric(
+        "Storage Throughput",
+        f'{ai_capacity["Storage_Throughput_Gbps"]:,.1f} Gbps'
+    )
+
+    metric3.metric(
+        "Network Bandwidth",
+        f'{ai_capacity["Network_Gbps"]:,.1f} Gbps'
+    )
+
+    metric4, metric5, metric6 = st.columns(3)
+
+    metric4.metric(
+        "Required Storage IOPS",
+        f'{ai_capacity["Required_IOPS"]:,.0f}'
+    )
+
+    metric5.metric(
+        "Estimated GPU Count",
+        f'{ai_capacity["GPU_Count"]:,}'
+    )
+
+    metric6.metric(
+        "Estimated AI Storage",
+        f'{ai_capacity["AI_Storage_TB"]:,.1f} TB'
+    )
+
+else:
+    st.warning(
+        "The capacity model is not available in this section's "
+        "current scope. The architecture visualization remains available."
+    )
+
+st.caption(
+    "Capacity values are theoretical estimates from the existing model. "
+    "They are not measurements of actual pipeline performance."
+)
+
+# ------------------------------------------------------------
+# 9.6 - ARCHITECTURE REVIEW CHECKLIST
+# ------------------------------------------------------------
+
+st.subheader("5. Architecture Review Checklist")
+
+st.checkbox(
+    "Source access and data movement method have been identified",
+    key="step9_source_review"
+)
+
+st.checkbox(
+    "Network and storage requirements have been considered",
+    key="step9_storage_network_review"
+)
+
+st.checkbox(
+    "Data quality, security, and governance requirements have been considered",
+    key="step9_governance_review"
+)
+
+st.checkbox(
+    "AI workload requirements have been mapped to infrastructure",
+    key="step9_ai_review"
+)
+
+st.warning(
+    "The checklist records selections in the current app session. "
+    "It does not certify architecture readiness or persist an approval record."
+)
+
