@@ -1880,3 +1880,246 @@ st.warning(
     "It does not certify architecture readiness or persist an approval record."
 )
 
+
+# ============================================================
+# STEP 10 - AI DECISION-SUPPORT CO-PILOT
+# ============================================================
+
+st.divider()
+
+st.header("AI Infrastructure Decision-Support Co-Pilot")
+
+st.caption(
+    "Explore infrastructure concerns, review modeled evidence, "
+    "and identify practical validation and mitigation actions."
+)
+
+st.info(
+    "This prototype uses deterministic decision rules and modeled "
+    "capacity estimates. It does not use an LLM or live infrastructure telemetry."
+)
+
+# ------------------------------------------------------------
+# 10.1 - USER INPUTS
+# ------------------------------------------------------------
+
+decision_area = st.selectbox(
+    "What infrastructure concern do you want to investigate?",
+    [
+        "Automatic: Primary Bottleneck",
+        "Storage IOPS",
+        "Network Bandwidth",
+        "GPU Capacity and Memory",
+        "Storage Capacity",
+        "Data Pipeline Performance"
+    ],
+    key="step10_decision_area"
+)
+
+decision_priority = st.selectbox(
+    "Business priority",
+    [
+        "Meet a data processing window",
+        "Control infrastructure cost",
+        "Reduce performance risk",
+        "Prepare for AI workload growth"
+    ],
+    key="step10_business_priority"
+)
+
+# ------------------------------------------------------------
+# 10.2 - EVIDENCE AND RECOMMENDATION RULES
+# ------------------------------------------------------------
+
+decision_rules = {
+    "Storage IOPS": {
+        "concern": "Storage I/O demand may exceed the target platform's capability.",
+        "evidence": (
+            "The modeled IOPS estimate is derived from dataset transfer "
+            "throughput and the selected I/O block size."
+        ),
+        "actions": [
+            "Measure workload IOPS, read/write mix, and latency requirements.",
+            "Compare measured demand with the target storage platform's limits.",
+            "Evaluate parallelism, caching, and suitable high-performance storage.",
+            "Repeat the sizing exercise using measured workload characteristics."
+        ]
+    },
+    "Network Bandwidth": {
+        "concern": "The transfer window may require substantial network bandwidth.",
+        "evidence": (
+            "The modeled bandwidth estimate depends on AI dataset size "
+            "and the selected transfer window."
+        ),
+        "actions": [
+            "Confirm the required transfer window and effective data volume.",
+            "Measure available end-to-end bandwidth and protocol overhead.",
+            "Check for network contention and concurrent data transfers.",
+            "Evaluate transfer scheduling or higher-bandwidth connectivity if needed."
+        ]
+    },
+    "GPU Capacity and Memory": {
+        "concern": "The selected model may require significant GPU memory and compute capacity.",
+        "evidence": (
+            "GPU count is estimated from model memory, a training-memory "
+            "multiplier, and selected GPU VRAM."
+        ),
+        "actions": [
+            "Confirm model architecture, precision, and training strategy.",
+            "Validate memory requirements against the selected framework.",
+            "Account for parallelism, activations, optimizer state, and runtime overhead.",
+            "Benchmark representative training or inference workloads before procurement."
+        ]
+    },
+    "Storage Capacity": {
+        "concern": "The AI dataset and its additional storage requirements may increase capacity needs.",
+        "evidence": (
+            "The model estimates AI storage at 1.5 times the AI dataset size."
+        ),
+        "actions": [
+            "Confirm the retained dataset size and growth rate.",
+            "Include replicas, checkpoints, intermediate data, and retention requirements.",
+            "Separate hot, warm, and archival data where appropriate.",
+            "Validate usable capacity after redundancy and platform overhead."
+        ]
+    },
+    "Data Pipeline Performance": {
+        "concern": "The pipeline may not deliver AI-ready data within the required time.",
+        "evidence": (
+            "The architecture describes pipeline stages, but this prototype "
+            "does not measure actual pipeline execution."
+        ),
+        "actions": [
+            "Define end-to-end freshness and completion-time objectives.",
+            "Measure ingestion, transformation, and data-quality stage durations.",
+            "Identify retries, bottlenecks, source-system constraints, and data-quality failures.",
+            "Run a representative end-to-end test with realistic data volumes."
+        ]
+    }
+}
+
+# ------------------------------------------------------------
+# 10.3 - SELECT THE INVESTIGATION AREA
+# ------------------------------------------------------------
+
+if decision_area == "Automatic: Primary Bottleneck":
+
+    if "primary_bottleneck" in globals():
+        investigation_area = primary_bottleneck
+    else:
+        investigation_area = "Data Pipeline Performance"
+
+else:
+    investigation_area = decision_area
+
+# ------------------------------------------------------------
+# 10.4 - DISPLAY THE DECISION BRIEF
+# ------------------------------------------------------------
+
+st.subheader("Decision Brief")
+
+st.write(f"**Investigation area:** {investigation_area}")
+st.write(f"**Business priority:** {decision_priority}")
+
+if investigation_area in decision_rules:
+
+    selected_rule = decision_rules[investigation_area]
+
+    st.markdown("### Assessment")
+    st.write(selected_rule["concern"])
+
+    st.markdown("### Supporting evidence")
+    st.write(selected_rule["evidence"])
+
+    # Show relevant modeled metrics when available.
+    if "ai_capacity" in globals():
+
+        if investigation_area == "Storage IOPS":
+            st.metric(
+                "Modeled Required IOPS",
+                f'{ai_capacity["Required_IOPS"]:,.0f}'
+            )
+
+        elif investigation_area == "Network Bandwidth":
+            st.metric(
+                "Modeled Network Bandwidth",
+                f'{ai_capacity["Network_Gbps"]:,.1f} Gbps'
+            )
+
+        elif investigation_area == "GPU Capacity and Memory":
+
+            gpu_col1, gpu_col2 = st.columns(2)
+
+            gpu_col1.metric(
+                "Estimated GPU Count",
+                f'{ai_capacity["GPU_Count"]:,}'
+            )
+
+            gpu_col2.metric(
+                "Estimated Training Memory",
+                f'{ai_capacity["Training_Memory_GB"]:,.1f} GB'
+            )
+
+        elif investigation_area == "Storage Capacity":
+            st.metric(
+                "Estimated AI Storage",
+                f'{ai_capacity["AI_Storage_TB"]:,.1f} TB'
+            )
+
+    st.markdown("### Recommended next actions")
+
+    for action in selected_rule["actions"]:
+        st.markdown(f"- {action}")
+
+    # Business-priority guidance
+    priority_guidance = {
+        "Meet a data processing window": (
+            "Prioritize end-to-end timing measurements and identify "
+            "which pipeline or infrastructure stage consumes the most time."
+        ),
+        "Control infrastructure cost": (
+            "Compare workload demand with provisioned capacity, utilization, "
+            "retention requirements, and tiering opportunities."
+        ),
+        "Reduce performance risk": (
+            "Validate performance limits, establish service objectives, "
+            "and test representative peak-load conditions."
+        ),
+        "Prepare for AI workload growth": (
+            "Model multiple growth scenarios and validate scaling limits "
+            "for storage, network, memory, and compute."
+        )
+    }
+
+    st.markdown("### Priority-specific guidance")
+    st.write(priority_guidance[decision_priority])
+
+else:
+    st.warning(
+        "No recommendation rule is configured for this investigation area."
+    )
+
+# ------------------------------------------------------------
+# 10.5 - EXISTING OVERALL RISK CONTEXT
+# ------------------------------------------------------------
+
+st.subheader("Overall Infrastructure Context")
+
+if "overall_risk" in globals():
+    st.metric(
+        "Modeled Overall Infrastructure Risk",
+        overall_risk
+    )
+
+if "primary_bottleneck" in globals():
+    st.write(f"**Current primary bottleneck:** {primary_bottleneck}")
+
+if "recommendation" in globals():
+    st.write(f"**Current model recommendation:** {recommendation}")
+
+st.caption(
+    "Recommendations are rule-based planning guidance, not automated "
+    "operational commands. Validate assumptions with actual telemetry, "
+    "vendor specifications, security requirements, and workload testing."
+)
+
