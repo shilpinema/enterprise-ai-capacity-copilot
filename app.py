@@ -761,12 +761,24 @@ total_mainframe_tb = mainframe_df["Data_TB"].sum()
 total_ai_candidate_tb = (
     mainframe_df["AI_Candidate_TB"].sum()
 )
+
+# Scale AI-candidate data to the selected dataset size.
+# Assumption: the AI-candidate percentage stays constant.
+
+dataset_scale_factor = (
+    dataset_tb / total_mainframe_tb
+)
+
+scaled_ai_candidate_tb = (
+    total_ai_candidate_tb * dataset_scale_factor
+)
+
 # ============================================================
 # AI INFRASTRUCTURE CAPACITY MODEL
 # ============================================================
 
 ai_capacity = calculate_ai_capacity(
-    ai_data_tb=total_ai_candidate_tb,
+    ai_data_tb=scaled_ai_candidate_tb,
     model_parameters_b=model_parameters_b,
     vram_per_gpu_gb=vram_per_gpu_gb,
     precision_bytes=precision_bytes,
