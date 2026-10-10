@@ -170,24 +170,25 @@ def analyze_infrastructure_risk(capacity):
             "Reason": "Network requirement is manageable"
         })
 
+   
     # Storage IOPS risk
-    if capacity["Required_IOPS"] >= 100000:
+    if capacity["Required_IOPS"] >= 500000:
         risks.append({
             "Area": "Storage IOPS",
             "Risk": "High",
-            "Reason": "Very high storage I/O performance required"
+            "Reason": "Very high storage I/O demand; validate against target storage capability"
         })
-    elif capacity["Required_IOPS"] >= 50000:
+    elif capacity["Required_IOPS"] >= 100000:
         risks.append({
             "Area": "Storage IOPS",
             "Risk": "Medium",
-            "Reason": "Elevated storage I/O performance required"
+            "Reason": "Elevated storage I/O demand; verify throughput and latency targets"
         })
     else:
         risks.append({
             "Area": "Storage IOPS",
             "Risk": "Low",
-            "Reason": "Storage I/O requirement is manageable"
+            "Reason": "Lower modeled storage I/O demand; validate against workload requirements"
         })
 
     # Storage capacity risk
